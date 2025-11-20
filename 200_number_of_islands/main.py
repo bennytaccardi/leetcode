@@ -27,13 +27,32 @@ class Solution:
                     queue.append(neighbor)
         return visited
 
+    def dfs(self, grid: List[List[str]], current_node: Tuple[int, int], visited = None) -> Set[Tuple[int, int]]:
+        if visited is None:
+            visited = set()
+        visited.add(current_node)
+        row_current = current_node[0]
+        col_current = current_node[1]
+        potential_neighbors = [(row_current - 1, col_current),
+                               (row_current, col_current - 1),
+                               (row_current + 1, col_current),
+                               (row_current, col_current + 1)]
+        neighbors = [(r, c) for r, c in potential_neighbors if
+                     self.is_valid(r, c, len(grid), len(grid[0])) and grid[r][c] == "1"]
+
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                self.dfs(grid, neighbor, visited)
+        return visited
+
     def numIslands(self, grid: List[List[str]]) -> int:
         visited: Set[Tuple[int, int]] = set()
         islands = 0
         for r, row in enumerate(grid):
             for c, item in enumerate(row):
                 if (r,c) not in visited and item == "1":
-                    result = self.bfs(grid,(r,c))
+                    # result = self.bfs(grid,(r,c))
+                    result = self.dfs(grid,(r,c))
                     islands += 1
                     visited.update(result)
         return islands
